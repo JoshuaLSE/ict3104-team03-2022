@@ -10,9 +10,12 @@ Toyota Smart Home Project: Using Machine Learning to View Activities in a Home
 ## Set up
 ### 1. Search Anaconda Prompt in Windows Search
 
-### 2. Open the Anaconda Terminal and type in the commands below
+### 2. Open the Anaconda Terminal, cd into directory and type in the commands below
+```
+cd C:\Users\~DirectoryLocation~\Desktop\CurrentProjects\ict3104-team03-2022
+```
 
-### 3. Create a new and clean virtual environment
+### 3. Create a new and clean virtual environment (May need to pip install virtualenv)
 
 ```
 virtualenv new_env 
@@ -24,7 +27,7 @@ virtualenv new_env
 .\new_env\Scripts\activate
 ```
 
-### 5. Create a new conda environment
+### 5. Create a new conda environment, press y to continue installation
 ```
 conda create -n life python=3.10
 ```
