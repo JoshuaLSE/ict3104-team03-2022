@@ -32,8 +32,8 @@ parser.add_argument('-model', type=str, default='PDAN')  # Default set to PDAN
 parser.add_argument('-APtype', type=str, default='map')  # Change wap to map
 parser.add_argument('-randomseed', type=str, default='False')
 # parser.add_argument('-load_model', type=str, default='False')
-parser.add_argument('-load_model', type=str, default='./PDAN/model_epoch_0.0002_0')
-# parser.add_argument('-load_model', type=str, default='./PDAN_TSU_RGB')
+# parser.add_argument('-load_model', type=str, default='./PDAN/model_epoch_0.0002_0')
+parser.add_argument('-load_model', type=str, default='./models/PDAN_TSU_RGB')
 parser.add_argument('-num_channel', type=str, default='512')  # Change false to 512
 parser.add_argument('-batch_size', type=str, default='1')  # Change false to 2/1
 parser.add_argument('-kernelsize', type=str, default='2')  # Change false to 3/2
