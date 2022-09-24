@@ -90,12 +90,12 @@ if args.dataset == 'TSU':
     classes=51
     
     if split_setting =='CS':
-        train_split = './data/smarthome_CS_51.json'
-        test_split = './data/smarthome_CS_51.json'
+        train_split = './tsu_data/smarthome_CS_51.json'
+        test_split = './tsu_data/smarthome_CS_51.json'
         
     elif split_setting =='CV':
-        train_split = './data/smarthome_CV_51.json'
-        test_split = './data/smarthome_CV_51.json'
+        train_split = './tsu_data/smarthome_CV_51.json'
+        test_split = './tsu_data/smarthome_CV_51.json'
     
     rgb_root = './TSU_RGB_i3d_feat/RGB_i3d_16frames_64000_SSD'
     skeleton_root='/skeleton/feat/Path/' # 

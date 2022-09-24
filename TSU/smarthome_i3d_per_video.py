@@ -89,7 +89,7 @@ class TSU(data_utl.Dataset):
 
 
 def TSU_collate_fn(batch):
-    "Pads data and puts it into a tensor of same dimensions"
+    "Pads tsu_data and puts it into a tensor of same dimensions"
     max_len = 0
     for b in batch:
         if b[0].shape[0] > max_len:
