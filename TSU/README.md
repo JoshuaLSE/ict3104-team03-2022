@@ -15,3 +15,7 @@ Kindly take note of the following params
 
 rgb_root
 data
+
+# Output Folder(s)
+## PDAN
+#### This folder will contain the generated/trained MODELS and WEIGHTS
