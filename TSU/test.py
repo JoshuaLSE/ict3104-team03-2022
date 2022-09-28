@@ -32,7 +32,7 @@ parser.add_argument('-model', type=str, default='PDAN')  # Default set to PDAN
 parser.add_argument('-APtype', type=str, default='map')  # Change wap to map
 parser.add_argument('-randomseed', type=str, default='False')
 # parser.add_argument('-load_model', type=str, default='False')
-parser.add_argument('-load_model', type=str, default='./models/PDAN_TSU_RGB')
+parser.add_argument('-load_model', type=str, default='./TSU/models/PDAN_TSU_RGB')
 parser.add_argument('-num_channel', type=str, default='512')  # Change false to 512
 parser.add_argument('-batch_size', type=str, default='1')  # Change false to 2/1
 parser.add_argument('-kernelsize', type=str, default='2')  # Change false to 3/2
@@ -102,7 +102,7 @@ if args.dataset == 'TSU':
         train_split = './TSU/tsu_data/smarthome_CV_51.json'
         test_split = './TSU/tsu_data/smarthome_CV_51.json'
     
-    rgb_root = './TSU_RGB_i3d_feat/RGB_i3d_16frames_64000_SSD'
+    rgb_root = './TSU/TSU_RGB_i3d_feat/RGB_i3d_16frames_64000_SSD'
     skeleton_root='/skeleton/feat/Path/' # 
 
 def sigmoid(x):
