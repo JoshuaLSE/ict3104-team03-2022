@@ -95,8 +95,8 @@ if args.dataset == 'TSU':
 
     # Uncomment this if you're using the IDE version
     if split_setting =='CS':
-        train_split = './tsu_data/smarthome_CS_51.json'
-        test_split = './tsu_data/smarthome_CS_51.json'
+        train_split = './TSU/tsu_data/smarthome_CS_51.json'
+        test_split = './TSU/tsu_data/smarthome_CS_51.json'
         
     elif split_setting =='CV':
         train_split = './TSU/tsu_data/smarthome_CV_51.json'
