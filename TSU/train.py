@@ -164,9 +164,10 @@ def run(models, criterion, num_epochs=50):
             if best_map < val_map:
                 best_map = val_map
                 torch.save(model.state_dict(),
-                           './' + str(args.model) + '/weight_epoch_' + str(args.lr) + '_' + str(epoch))
-                torch.save(model, './' + str(args.model_name) + '/model_epoch_' + str(args.lr) + '_' + str(epoch))
-                print('save here:', './' + str(args.model_name) + '/weight_epoch_' + str(args.lr) + '_' + str(epoch))
+                           './TSU/' + str(args.model) + '/weight_epoch_' + str(args.lr) + '_' + str(epoch))
+                torch.save(model, './TSU/' + str(args.model) + '/' + str(args.model_name) + '_epoch_' + str(
+                    args.lr) + '_' + str(epoch))
+                print('save here:', './TSU/' + str(args.model) + '/weight_epoch_' + str(args.lr) + '_' + str(epoch))
 
 
 def eval_model(model, dataloader, baseline=False):
