@@ -167,7 +167,8 @@ def run(models, criterion, num_epochs=50):
                            './TSU/' + str(args.model) + '/weight_epoch_' + str(args.lr) + '_' + str(epoch))
                 torch.save(model, './TSU/' + str(args.model) + '/' + str(args.model_name) + '_epoch_' + str(
                     args.lr) + '_' + str(epoch))
-                print('save here:', './TSU/' + str(args.model) + '/weight_epoch_' + str(args.lr) + '_' + str(epoch))
+                print('save here:', './TSU/' + str(args.model) + '/' + str(args.model_name) + '_epoch_' + str(
+                    args.lr) + '_' + str(epoch))
 
 
 def eval_model(model, dataloader, baseline=False):
@@ -284,6 +285,7 @@ def val_step(model, gpu, dataloader, epoch):
 if __name__ == '__main__':
     # print(str(args.model))
     # print('batch_size:', batch_size)
+    __spec__ = None
     print('cuda_avail', torch.cuda.is_available())
 
     if args.mode == 'flow':
