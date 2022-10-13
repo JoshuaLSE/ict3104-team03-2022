@@ -2,7 +2,6 @@ import json
 import os.path
 from sklearn.utils import shuffle
 
-
 def create_subset_json(no_of_test, no_of_train, input_file_name, input_file_directory, output_file_name, output_file_directory):
     """ Creates an output json with entries that is a subset of the input json
 
@@ -24,9 +23,9 @@ def create_subset_json(no_of_test, no_of_train, input_file_name, input_file_dire
     -Usage-
     no_of_test = 2
     no_of_train = 0
-    input_file_name = "smarthome_CS_51_old"
+    input_file_name = "smarthome_CS_51.json"
     input_file_directory = "./TSU/tsu_data/"
-    output_file_name = "hello"
+    output_file_name = "train_smarthome_CS.json"
     output_file_directory = "./TSU/tsu_data/"
     test_train_json.create_subset_json(no_of_test, no_of_train, input_file_name, input_file_directory, output_file_name, output_file_directory)
     """
@@ -36,14 +35,13 @@ def create_subset_json(no_of_test, no_of_train, input_file_name, input_file_dire
     user_selecttesting = no_of_test
     user_selecttraining = no_of_train
     user_pathfilesave = output_file_directory
-    file += input_file_name + ".json"
+    file += input_file_name
     # open user selected file
     f = open(file)
     data = json.load(f)
     testing = []
     training = []
-    final_training = []
-    final_testing = []
+    final_json = {}
     # Run file to get data name in new array where it is testing or training
     for info in data:
         if data[info]['subset'] == "testing":
@@ -57,14 +55,31 @@ def create_subset_json(no_of_test, no_of_train, input_file_name, input_file_dire
     for i in range(user_selecttesting):
         for datatest in data:
             if datatest == testing[i]:
-                result1 = (datatest, data[datatest])
-                final_testing.append(result1)
+                final_json[datatest] = data[datatest]
     for i in range(user_selecttraining):
         for datatest in data:
             if datatest == training[i]:
-                result = (datatest, data[datatest])
-                final_training.append(result)
+                final_json[datatest] = data[datatest]
     # save into a new json file
-    with open(user_pathfilesave+output_file_name+'.json', mode='w+') as f:
-        json.dump(final_testing, f, indent=2)
-        json.dump(final_training, f, indent=2)
+    with open(user_pathfilesave+output_file_name, mode='w+') as f:
+        json.dump(final_json, f, indent=2)
+
+    return len(final_json)
+
+'''
+use to load just 1 video data into inferencing_dataset.json for inferencing
+'''
+def inference_json(video_name, dataset_type):
+    file = None
+    final_json = {}
+    if dataset_type == "TSU":
+        file = "./TSU/tsu_data/smarthome_CS_51.json"
+        with open(file, mode='r') as f:
+            data = json.load(f)
+        video = video_name.replace(".mp4", "")
+        for info in data:
+            if info == video:
+                final_json[info] = data[info]
+        with open("./TSU/tsu_data/inference_smarthome_CS_51.json", mode='w+') as f:
+            json.dump(final_json, f, indent = 2)
+    return video

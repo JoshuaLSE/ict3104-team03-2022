@@ -3,6 +3,8 @@
 
 # ignore all the large video files folder
 data/
+video_features/
+videosCaptionOutput/
 
 
 ### JupyterNotebooks ###
