@@ -23,7 +23,7 @@ parser.add_argument('-comp_info', type=str, default='TSU_CS_RGB_PDAN') # Default
 parser.add_argument('-rgb_model_file', type=str)
 parser.add_argument('-flow_model_file', type=str)
 parser.add_argument('-gpu', type=str, default='3')
-parser.add_argument('-dataset', type=str, default='TSU')  # Changed charades to TSU
+parser.add_argument('-dataset_type', type=str, default='TSU')  # Changed charades to TSU
 parser.add_argument('-rgb_root', type=str, default='no_root')
 parser.add_argument('-flow_root', type=str, default='no_root')
 parser.add_argument('-type', type=str, default='original')
@@ -41,6 +41,8 @@ parser.add_argument('-feat', type=str, default='False')
 parser.add_argument('-split_setting', type=str, default='CS')  # Default set to CS
 ### for inferencing, only load 1 video
 parser.add_argument('-video_name', type=str)
+parser.add_argument('-dataset', type=str, default='smarthome_CS_51.json')
+
 args = parser.parse_args()
 
 import torch
@@ -84,7 +86,7 @@ if str(args.APtype) == 'map':
 
 batch_size = int(args.batch_size)
 
-if args.dataset == 'TSU':
+if args.dataset_type == 'TSU':
     split_setting=str(args.split_setting)
     
     from smarthome_i3d_per_video import TSU as Dataset
@@ -95,11 +97,11 @@ if args.dataset == 'TSU':
     ### Removed the path for train_split as we are not taking any data for training, just need to test
     if split_setting =='CS':
         train_split = ''
-        test_split = './TSU/tsu_data/smarthome_CS_51.json'
+        test_split = './TSU/tsu_data/' + args.dataset
         
     elif split_setting =='CV':
         train_split = ''
-        test_split = './TSU/tsu_data/smarthome_CV_51.json'
+        test_split = './TSU/tsu_data/' + args.dataset
     
     rgb_root = './TSU/TSU_RGB_i3d_feat/RGB_i3d_16frames_64000_SSD'
     skeleton_root='/skeleton/feat/Path/' # 

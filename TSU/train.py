@@ -22,7 +22,7 @@ parser.add_argument('-comp_info', type=str)
 parser.add_argument('-rgb_model_file', type=str)
 parser.add_argument('-flow_model_file', type=str)
 parser.add_argument('-gpu', type=str, default='4')
-parser.add_argument('-dataset', type=str, default='TSU')
+parser.add_argument('-dataset_type', type=str, default='TSU')
 parser.add_argument('-rgb_root', type=str, default='no_root')
 parser.add_argument('-flow_root', type=str, default='no_root')
 parser.add_argument('-type', type=str, default='original')
@@ -38,6 +38,8 @@ parser.add_argument('-kernelsize', type=str, default='False')
 parser.add_argument('-feat', type=str, default='False')
 parser.add_argument('-split_setting', type=str, default='CS')
 parser.add_argument('-model_name', type=str, default='modelNameRequired')
+parser.add_argument('-dataset', type=str, default='smarthome_CS_51.json')
+
 args = parser.parse_args()
 
 import torch
@@ -78,7 +80,7 @@ if str(args.APtype) == 'map':
 
 batch_size = int(args.batch_size)
 
-if args.dataset == 'TSU':
+if args.dataset_type == 'TSU':
     split_setting = str(args.split_setting)
 
     from smarthome_i3d_per_video import TSU as Dataset
@@ -87,12 +89,12 @@ if args.dataset == 'TSU':
     classes = 51
 
     if split_setting == 'CS':
-        train_split = './TSU/tsu_data/smarthome_CS_51.json'
-        test_split = './TSU/tsu_data/smarthome_CS_51.json'
+        train_split = './TSU/tsu_data/' + args.dataset
+        test_split = './TSU/tsu_data/' + args.dataset
 
     elif split_setting == 'CV':
-        train_split = './TSU/tsu_data/smarthome_CV_51.json'
-        test_split = './TSU/tsu_data/smarthome_CV_51.json'
+        train_split = './TSU/tsu_data/' + args.dataset
+        test_split = './TSU/tsu_data/' + args.dataset
 
     rgb_root = './TSU/TSU_RGB_i3d_feat/RGB_i3d_16frames_64000_SSD'
     skeleton_root = '/skeleton/feat/Path/'  #
@@ -144,16 +146,18 @@ def load_data(train_split, val_split, root):
     datasets = {'train': dataset, 'val': val_dataset}
     return dataloaders, datasets
 
+from util_modules.ui_util.progress_bar import progress_bar
 
 # train the model
 def run(models, criterion, num_epochs=50):
     since = time.time()
-
     best_map = 0.0
+    progress_bar_instance = progress_bar(num_epochs)
+    progress_bar_instance.display_bar()
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         print('-' * 10)
-
+        progress_bar_instance.update_bar()
         probs = []
         for model, gpu, dataloader, optimizer, sched, model_file in models:
             train_map, train_loss = train_step(model, gpu, optimizer, dataloader['train'], epoch)
@@ -280,6 +284,7 @@ def val_step(model, gpu, dataloader, epoch):
     apm.reset()
 
     return full_probs, epoch_loss, val_map
+
 
 
 if __name__ == '__main__':
