@@ -157,7 +157,6 @@ def run(models, criterion, num_epochs=50):
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         print('-' * 10)
-        progress_bar_instance.update_bar()
         probs = []
         for model, gpu, dataloader, optimizer, sched, model_file in models:
             train_map, train_loss = train_step(model, gpu, optimizer, dataloader['train'], epoch)
@@ -173,6 +172,8 @@ def run(models, criterion, num_epochs=50):
                     args.lr) + '_' + str(epoch))
                 print('save here:', './TSU/' + str(args.model) + '/' + str(args.model_name) + '_epoch_' + str(
                     args.lr) + '_' + str(epoch))
+        
+        progress_bar_instance.update_bar()
 
 
 def eval_model(model, dataloader, baseline=False):

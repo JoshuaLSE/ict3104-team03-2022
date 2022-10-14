@@ -96,9 +96,7 @@ widgetsnbextension==4.0.3
 google==3.0.0
 google-api-core==2.10.1
 google-api-python-client==2.62.0
-google-auth==1.4.2
 google-auth-httplib2==0.1.0
 google-cloud==0.34.0
 googleapis-common-protos==1.56.4
 requests==2.21.0
-urllib3==1.26.12
