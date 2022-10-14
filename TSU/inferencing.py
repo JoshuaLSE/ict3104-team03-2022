@@ -330,7 +330,7 @@ def output_csv(indexArray, frames, video_name, model_name, val_map, val_loss, cl
     model = model_name.replace("./TSU/models/", "")
     video = video_name.replace(".mp4", "")
 
-    header = ['action', 'start','end']
+    header = ['action', 'start','end', 'accuracy']
     file = open('./data/generatedAnnotations/{model_name}_{video_name}.csv'.format(model_name=model, video_name=video), 'w', encoding='UTF8', newline='')
     actionList = ["Enter", "Walk","Make_coffee", "Get_water", "Make_coffee", "Use_Drawer", "Make_coffee.Pour_grains", 
                     "Use_telephone", "Leave", "Put_something_on_table", "Take_something_off_table" , "Pour.From_kettle", 
@@ -347,10 +347,11 @@ def output_csv(indexArray, frames, video_name, model_name, val_map, val_loss, cl
     writer.writerow(["Validation Loss: ", val_loss.item()])
     writer.writerow([])
     writer.writerow(["Overall Accuracy per action"])
+    accuray_dict = {}
     for i in range(0, len(class_accuracy.numpy())):
         if (class_accuracy.numpy()[i] > 0):
+            accuray_dict[actionList[i]] = class_accuracy.numpy()[i]
             writer.writerow([actionList[i], class_accuracy.numpy()[i]])
-    
     writer.writerow([])
 
     writer.writerow(header)
@@ -364,7 +365,14 @@ def output_csv(indexArray, frames, video_name, model_name, val_map, val_loss, cl
             endFrames += framesPerIndex
         else:
             endFrames += framesPerIndex
-            writer.writerow([actionList[indexArray[i]], truncate(currentFrames), truncate(endFrames)])
+            new_row = []
+            for action in accuray_dict.keys():
+                if (actionList[indexArray[i]] == action):
+                    new_row = [actionList[indexArray[i]], truncate(currentFrames), truncate(endFrames),accuray_dict[action]]
+                    break
+                else:
+                    new_row = [actionList[indexArray[i]], truncate(currentFrames), truncate(endFrames),0.0]
+            writer.writerow(new_row)
             currentFrames = endFrames
 
     file.close()
