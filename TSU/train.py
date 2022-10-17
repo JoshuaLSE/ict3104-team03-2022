@@ -155,8 +155,8 @@ def run(models, criterion, num_epochs=50):
     progress_bar_instance = progress_bar(num_epochs)
     progress_bar_instance.display_bar()
     for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
-        print('-' * 10)
+        # print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+        # print('-' * 10)
         probs = []
         for model, gpu, dataloader, optimizer, sched, model_file in models:
             train_map, train_loss = train_step(model, gpu, optimizer, dataloader['train'], epoch)
@@ -170,8 +170,8 @@ def run(models, criterion, num_epochs=50):
                            './TSU/' + str(args.model) + '/weight_epoch_' + str(args.lr) + '_' + str(epoch))
                 torch.save(model, './TSU/' + str(args.model) + '/' + str(args.model_name) + '_epoch_' + str(
                     args.lr) + '_' + str(epoch))
-                print('save here:', './TSU/' + str(args.model) + '/' + str(args.model_name) + '_epoch_' + str(
-                    args.lr) + '_' + str(epoch))
+                # print('save here:', './TSU/' + str(args.model) + '/' + str(args.model_name) + '_epoch_' + str(
+                #     args.lr) + '_' + str(epoch))
         
         progress_bar_instance.update_bar()
 
@@ -243,7 +243,7 @@ def train_step(model, gpu, optimizer, dataloader, epoch):
         train_map = 100 * apm.value()
     else:
         train_map = 100 * apm.value().mean()
-    print('train-map:', train_map)
+    # print('train-map:', train_map)
     apm.reset()
 
     epoch_loss = tot_loss / num_iter
@@ -280,8 +280,8 @@ def val_step(model, gpu, dataloader, epoch):
     epoch_loss = tot_loss / num_iter
 
     val_map = torch.sum(100 * apm.value()) / torch.nonzero(100 * apm.value()).size()[0]
-    print('val-map:', val_map)
-    print(100 * apm.value())
+    # print('val-map:', val_map)
+    # print(100 * apm.value())
     apm.reset()
 
     return full_probs, epoch_loss, val_map
@@ -292,16 +292,16 @@ if __name__ == '__main__':
     # print(str(args.model))
     # print('batch_size:', batch_size)
     __spec__ = None
-    print('cuda_avail', torch.cuda.is_available())
+    # print('cuda_avail', torch.cuda.is_available())
 
     if args.mode == 'flow':
-        print('flow mode', flow_root)
+        # print('flow mode', flow_root)
         dataloaders, datasets = load_data(train_split, test_split, flow_root)
     elif args.mode == 'skeleton':
-        print('Pose mode', skeleton_root)
+        # print('Pose mode', skeleton_root)
         dataloaders, datasets = load_data(train_split, test_split, skeleton_root)
     elif args.mode == 'rgb':
-        print('RGB mode', rgb_root)
+        # print('RGB mode', rgb_root)
         dataloaders, datasets = load_data(train_split, test_split, rgb_root)
 
     if args.train:
@@ -315,7 +315,7 @@ if __name__ == '__main__':
         mid_channel = int(args.num_channel)
 
         if args.model == "PDAN":
-            print("you are processing PDAN")
+            # print("you are processing PDAN")
             from models import PDAN as Net
 
             model = Net(num_stages=1, num_layers=5, num_f_maps=mid_channel, dim=input_channnel, num_classes=classes)
@@ -327,16 +327,16 @@ if __name__ == '__main__':
             model = torch.load(args.load_model)
             # weight
             # model.load_state_dict(torch.load(str(args.load_model)))
-            print("loaded", args.load_model)
+            # print("loaded", args.load_model)
 
         pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-        print('pytorch_total_params', pytorch_total_params)
-        print('num_channel:', num_channel, 'input_channnel:', input_channnel, 'num_classes:', num_classes)
+        # print('pytorch_total_params', pytorch_total_params)
+        # print('num_channel:', num_channel, 'input_channnel:', input_channnel, 'num_classes:', num_classes)
         model.cuda()
 
         criterion = nn.NLLLoss(reduce=False)
         lr = float(args.lr)
-        print(lr)
+        # print(lr)
         optimizer = optim.Adam(model.parameters(), lr=lr)
         lr_sched = optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=8, verbose=True)
         run([(model, 0, dataloaders, optimizer, lr_sched, args.comp_info)], criterion, num_epochs=int(args.epoch))
