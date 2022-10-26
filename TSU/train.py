@@ -4,6 +4,15 @@ import os
 import argparse
 import sys
 import torch
+import wandb
+from dotenv import load_dotenv
+
+'''
+Load the '.env' file
+'''
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
+WANDB_API_KEY = os.environ.get('WANDB_API_KEY')
 
 
 def str2bool(v):
@@ -39,6 +48,7 @@ parser.add_argument('-feat', type=str, default='False')
 parser.add_argument('-split_setting', type=str, default='CS')
 parser.add_argument('-model_name', type=str, default='modelNameRequired')
 parser.add_argument('-dataset', type=str, default='smarthome_CS_51.json')
+parser.add_argument('-wandb_project', type=str, default='')
 
 args = parser.parse_args()
 
@@ -65,7 +75,7 @@ torch.cuda.manual_seed_all(SEED)
 random.seed(SEED)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
-print('Random_SEED!!!:', SEED)
+# print('Random_SEED!!!:', SEED)
 
 from torch.optim import lr_scheduler
 from torch.autograd import Variable
@@ -146,7 +156,9 @@ def load_data(train_split, val_split, root):
     datasets = {'train': dataset, 'val': val_dataset}
     return dataloaders, datasets
 
+
 from util_modules.ui_util.progress_bar import progress_bar
+
 
 # train the model
 def run(models, criterion, num_epochs=50):
@@ -163,7 +175,16 @@ def run(models, criterion, num_epochs=50):
             prob_val, val_loss, val_map = val_step(model, gpu, dataloader['val'], epoch)
             probs.append(prob_val)
             sched.step(val_loss)
-
+            '''
+            Logging wandb
+            '''
+            wandb.log(
+                {
+                    "val_loss": val_loss,
+                    "val_map": val_map,
+                    "prob_val": prob_val
+                }
+            )
             if best_map < val_map:
                 best_map = val_map
                 torch.save(model.state_dict(),
@@ -172,8 +193,10 @@ def run(models, criterion, num_epochs=50):
                     args.lr) + '_' + str(epoch))
                 # print('save here:', './TSU/' + str(args.model) + '/' + str(args.model_name) + '_epoch_' + str(
                 #     args.lr) + '_' + str(epoch))
-        
+
         progress_bar_instance.update_bar()
+    wandb.finish()
+    print("Run finished")
 
 
 def eval_model(model, dataloader, baseline=False):
@@ -281,16 +304,52 @@ def val_step(model, gpu, dataloader, epoch):
 
     val_map = torch.sum(100 * apm.value()) / torch.nonzero(100 * apm.value()).size()[0]
     # print('val-map:', val_map)
-    # print(100 * apm.value())
+    columns = ['T (degC)', 'p (mbar)', 'rho (g/m**3)']
+    ys = [item for item in apm.value()]
+    xs = [i for i in range(len(apm.value()))]
+
+    '''
+    WandB Logging
+    '''
+    # wandb.log(
+    #     {
+    #         'val-map':val_map,
+    #         'activity_%':wandb.plot.line_series(
+    #             xs=xs,
+    #             ys=ys,
+    #             title="Weather Metrics"
+    #         )
+    #     }
+    # )
     apm.reset()
 
     return full_probs, epoch_loss, val_map
 
 
-
 if __name__ == '__main__':
     # print(str(args.model))
     # print('batch_size:', batch_size)
+    '''
+    Set up code for wandb project
+    '''
+    wandb.init(project=args.wandb_project)
+
+    wandb.config = {
+        "mode": args.mode,
+        "train": args.train,
+        "comp_info": args.comp_info,
+        "gpu": args.gpu,
+        "dataset_type": args.dataset_type,
+        "epochs": args.epoch,
+        "model": args.model,
+        "batch_size": args.batch_size,
+        "kernel_size": args.kernelsize,
+        "dataset": args.dataset,
+        "split_setting": args.split_setting,
+        "model_name": args.model_name,
+        "load_model": args.load_model
+    }
+
     __spec__ = None
     # print('cuda_avail', torch.cuda.is_available())
 
@@ -336,7 +395,7 @@ if __name__ == '__main__':
 
         criterion = nn.NLLLoss(reduce=False)
         lr = float(args.lr)
-        # print(lr)
+        # print('lr' + lr)
         optimizer = optim.Adam(model.parameters(), lr=lr)
         lr_sched = optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=8, verbose=True)
         run([(model, 0, dataloaders, optimizer, lr_sched, args.comp_info)], criterion, num_epochs=int(args.epoch))
