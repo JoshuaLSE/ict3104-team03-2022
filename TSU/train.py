@@ -195,8 +195,7 @@ def run(models, criterion, num_epochs=50):
                 #     args.lr) + '_' + str(epoch))
 
         progress_bar_instance.update_bar()
-    wandb.finish()
-    print("Run finished")
+    # wandb.finish()
 
 
 def eval_model(model, dataloader, baseline=False):
