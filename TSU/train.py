@@ -165,6 +165,7 @@ def run(models, criterion, num_epochs=50):
     since = time.time()
     best_map = 0.0
     progress_bar_instance = progress_bar(num_epochs)
+    print("Training in progress...")
     progress_bar_instance.display_bar()
     for epoch in range(num_epochs):
         # print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -193,6 +194,7 @@ def run(models, criterion, num_epochs=50):
                     args.lr) + '_' + str(epoch))
                 # print('save here:', './TSU/' + str(args.model) + '/' + str(args.model_name) + '_epoch_' + str(
                 #     args.lr) + '_' + str(epoch))
+                print('New trained model generated ('+ str(args.model) + "/" + str(args.model_name) + "_epoch_" + str(args.lr) + "_" + str(epoch) + ") has been saved.")
 
         progress_bar_instance.update_bar()
     # wandb.finish()

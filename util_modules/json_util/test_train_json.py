@@ -67,6 +67,26 @@ def create_subset_json(no_of_test, no_of_train, input_file_name, input_file_dire
     return len(final_json)
 
 '''
+use to count number of test and train in the file
+'''
+def count_train_test(file_name, dataset_type):
+    file = None
+    training = 0
+    testing = 0
+    if dataset_type == "TSU":
+        file = "./TSU/tsu_data/"+file_name
+        with open(file, mode='r') as f:
+            data = json.load(f)
+        
+    for info in data:
+        if data[info]['subset'] == "training":
+            training += 1
+        if data[info]['subset'] == "testing":
+            testing += 1
+    
+    return training, testing
+
+'''
 use to load just 1 video data into inferencing_dataset.json for inferencing
 '''
 def inference_json(video_name, dataset_type):
