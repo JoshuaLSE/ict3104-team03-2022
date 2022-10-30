@@ -377,7 +377,7 @@ def output_csv(index_dict, model_name, val_map, val_loss, class_accuracy, ind_va
                 else:
                     endFrames += framesPerIndex
                     new_row = [actionList[index_dict[item][i]], truncate(currentFrames), truncate(endFrames), item, ind_val_map[item].numpy()[index_dict[item][i]]]
-                    print(new_row, actionIndex)
+                    # print(new_row, actionIndex)
                     writer.writerow(new_row)
                     currentFrames = endFrames
                 
@@ -446,5 +446,5 @@ if __name__ == '__main__':
         prob_val, val_loss, val_map, index_dict, classAccuracy, ind_val_map_dict = val_step(model, 0, dataloaders['val'], args.epoch)
         print("val_loss: ", round(val_loss.item(),2), "%")
         print("val_map: ", round(val_map.item(),2), "%")
-        print("ind val map", ind_val_map_dict)
+        # print("ind val map", ind_val_map_dict)
         output_csv(index_dict, args.load_model, val_map, val_loss, classAccuracy, ind_val_map_dict)
