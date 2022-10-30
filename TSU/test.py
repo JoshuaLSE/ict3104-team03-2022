@@ -335,56 +335,60 @@ description: retrieve the output's action index array, map it with the action li
 :return -
 """
 def output_csv(index_dict, model_name, val_map, val_loss, class_accuracy, ind_val_map):
-    model = model_name.replace("./TSU/PDAN/", "")
-    header = ['Event', 'Start_frame','End_frame', 'Video_Name', 'Prediction Accuracy for the video']
-    file = open('./data/generatedAnnotations/{model_name}.csv'.format(model_name=model), 'w', encoding='UTF8', newline='')
-    actionList = ["Enter", "Walk","Make_coffee", "Get_water", "Make_coffee", "Use_Drawer", "Make_coffee.Pour_grains", 
-                    "Use_telephone", "Leave", "Put_something_on_table", "Take_something_off_table" , "Pour.From_kettle", 
-                    "Stir_coffee/tea", "Drink.From_cup", "Dump_in_trash", "Make_tea", "Make_tea.Boil_water", "Use_cupboard",
-                    "Make_tea.Insert_tea_bag" , "Read", "Take_pills", "Use_fridge", "Clean_dishes", "Clean_dishes.Put_something_in_sink",
-                    "Eat_snack", "Sit_down", "Watch_TV", "Use_laptop", "Get_up", "Drink.From_bottle", "Pour.From_bottle",
-                    "Drink.From_glass", "Lay_down", "Drink.From_can", "Write", "Breakfast", "Breakfast.Spread_jam_or_butter",
-                    "Breakfast.Cut_bread", "Breakfast.Eat_at_table", "Breakfast.Take_ham", "Clean_dishes.Dry_up", "Wipe_table",
-                    "Cook", "Cook.Cut", "Cook.Use_stove", "Cook.Stir", "Cook.Use_oven", "Clean_dishes.Clean_with_water",
-                    "Use_tablet", "Use_glasses", "Pour.From_can"]
-    writer = csv.writer(file)
+    # try:
+        model = model_name.replace("./TSU/PDAN/", "")
+        header = ['Event', 'Start_frame','End_frame', 'Video_Name', 'Prediction Accuracy for the video']
+        file = open('./data/evaluation/{model_name}.csv'.format(model_name=model), 'w', encoding='UTF8', newline='')
+        actionList = ["Enter", "Walk","Make_coffee", "Get_water", "Make_coffee", "Use_Drawer", "Make_coffee.Pour_grains", 
+                        "Use_telephone", "Leave", "Put_something_on_table", "Take_something_off_table" , "Pour.From_kettle", 
+                        "Stir_coffee/tea", "Drink.From_cup", "Dump_in_trash", "Make_tea", "Make_tea.Boil_water", "Use_cupboard",
+                        "Make_tea.Insert_tea_bag" , "Read", "Take_pills", "Use_fridge", "Clean_dishes", "Clean_dishes.Put_something_in_sink",
+                        "Eat_snack", "Sit_down", "Watch_TV", "Use_laptop", "Get_up", "Drink.From_bottle", "Pour.From_bottle",
+                        "Drink.From_glass", "Lay_down", "Drink.From_can", "Write", "Breakfast", "Breakfast.Spread_jam_or_butter",
+                        "Breakfast.Cut_bread", "Breakfast.Eat_at_table", "Breakfast.Take_ham", "Clean_dishes.Dry_up", "Wipe_table",
+                        "Cook", "Cook.Cut", "Cook.Use_stove", "Cook.Stir", "Cook.Use_oven", "Clean_dishes.Clean_with_water",
+                        "Use_tablet", "Use_glasses", "Pour.From_can"]
+        writer = csv.writer(file)
 
-    writer.writerow(["Overall Accuracy per action"])
-    accuray_dict = {}
-    for i in range(0, len(class_accuracy.numpy())):
-        if (class_accuracy.numpy()[i] > 0):
-            accuray_dict[actionList[i]] = class_accuracy.numpy()[i]
-            writer.writerow([actionList[i], class_accuracy.numpy()[i]])
-    writer.writerow([])
-    writer.writerow(["Tested on: ",str(len(index_dict))+" videos."])
-    writer.writerow(["Validation Mapping Accuracy: ", val_map.item()])
-    writer.writerow(["Validation Loss: ", val_loss.item()])
-    writer.writerow([])
-    writer.writerow(header)
-    
-    for item in index_dict:
-        video_name = item + ".mp4"
-        frames = calculate_frames(video_name)
-        currentFrames = 0
-        endFrames = 0
-        framesPerIndex = frames/len(index_dict[item])
-        actionIndex = 0
-        for i in range(0, len(index_dict[item])):
-            if ((i < len(index_dict[item])-1) and (index_dict[item][i] == index_dict[item][i+1]) ):
-                endFrames += framesPerIndex
-                actionIndex -= 1
-            else:
-                endFrames += framesPerIndex
-                new_row = [actionList[index_dict[item][i]], truncate(currentFrames), truncate(endFrames), item, ind_val_map[item].numpy()[actionIndex]]
-                writer.writerow(new_row)
-                currentFrames = endFrames
-            
-            actionIndex += 1
+        writer.writerow(["Overall Accuracy per action"])
+        accuray_dict = {}
+        for i in range(0, len(class_accuracy.numpy())):
+            if (class_accuracy.numpy()[i] > 0):
+                accuray_dict[actionList[i]] = class_accuracy.numpy()[i]
+                writer.writerow([actionList[i], class_accuracy.numpy()[i]])
         writer.writerow([])
+        writer.writerow(["Tested on: ",str(len(index_dict))+" videos."])
+        writer.writerow(["Validation Mapping Accuracy: ", val_map.item()])
+        writer.writerow(["Validation Loss: ", val_loss.item()])
+        writer.writerow([])
+        writer.writerow(header)
+        
+        for item in index_dict:
+            video_name = item + ".mp4"
+            frames = calculate_frames(video_name)
+            currentFrames = 0
+            endFrames = 0
+            framesPerIndex = frames/len(index_dict[item])
+            actionIndex = 0
+            for i in range(0, len(index_dict[item])):
+                if ((i < len(index_dict[item])-1) and (index_dict[item][i] == index_dict[item][i+1]) ):
+                    endFrames += framesPerIndex
+                    actionIndex -= 1
+                else:
+                    endFrames += framesPerIndex
+                    new_row = [actionList[index_dict[item][i]], truncate(currentFrames), truncate(endFrames), item, ind_val_map[item].numpy()[index_dict[item][i]]]
+                    print(new_row, actionIndex)
+                    writer.writerow(new_row)
+                    currentFrames = endFrames
+                
+                actionIndex += 1
+            writer.writerow([])
 
-    file.close()
-    print("successfully generated annotations {model_name}.csv and saved to ./data/generatedAnnotations/".format(model_name=model))
-    return
+        file.close()
+        print("successfully generated annotations {model_name}.csv and saved to ./data/evaluation/".format(model_name=model))
+        return
+    # except:
+    #     print("Seems like there is some issue exporting to csv.")
 
 if __name__ == '__main__':
     __spec__ = None
@@ -442,4 +446,5 @@ if __name__ == '__main__':
         prob_val, val_loss, val_map, index_dict, classAccuracy, ind_val_map_dict = val_step(model, 0, dataloaders['val'], args.epoch)
         print("val_loss: ", round(val_loss.item(),2), "%")
         print("val_map: ", round(val_map.item(),2), "%")
+        print("ind val map", ind_val_map_dict)
         output_csv(index_dict, args.load_model, val_map, val_loss, classAccuracy, ind_val_map_dict)

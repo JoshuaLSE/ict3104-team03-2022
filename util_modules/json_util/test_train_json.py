@@ -74,7 +74,7 @@ def count_train_test(file_name, dataset_type):
     training = 0
     testing = 0
     if dataset_type == "TSU":
-        file = "./TSU/tsu_data/"+file_name
+        file = "./TSU/tsu_data/"+str(file_name)
         with open(file, mode='r') as f:
             data = json.load(f)
         
